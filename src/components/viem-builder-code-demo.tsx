@@ -48,7 +48,7 @@ export function ViemBuilderCodeDemo() {
         setAddress((accounts[0] as Address | undefined) ?? null);
         setChainId(Number(currentChainId));
       } catch (nextError) {
-        setError(nextError instanceof Error ? nextError.message : "读取钱包状态失败。");
+        setError(nextError instanceof Error ? nextError.message : "Failed to read wallet state.");
       }
     };
 
@@ -77,7 +77,7 @@ export function ViemBuilderCodeDemo() {
 
   async function connectWallet() {
     if (!provider) {
-      setError("未检测到 injected wallet provider。");
+      setError("No injected wallet provider detected.");
       return;
     }
 
@@ -93,7 +93,7 @@ export function ViemBuilderCodeDemo() {
       setAddress((accounts[0] as Address | undefined) ?? null);
       setChainId(Number(currentChainId));
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "连接钱包失败。");
+      setError(nextError instanceof Error ? nextError.message : "Failed to connect wallet.");
     } finally {
       setIsConnecting(false);
     }
@@ -101,7 +101,7 @@ export function ViemBuilderCodeDemo() {
 
   async function switchToChain(targetChain: typeof xlayerMainnet | typeof xlayerTestnet) {
     if (!provider) {
-      setError("未检测到 injected wallet provider。");
+      setError("No injected wallet provider detected.");
       return;
     }
 
@@ -116,7 +116,7 @@ export function ViemBuilderCodeDemo() {
       setChainId(targetChain.id);
     } catch (nextError) {
       const message =
-        nextError instanceof Error ? nextError.message : "切换网络失败，请在钱包里手动切换。";
+        nextError instanceof Error ? nextError.message : "Failed to switch network. Please switch manually in your wallet.";
       setError(message);
     } finally {
       setIsSwitching(false);
@@ -125,7 +125,7 @@ export function ViemBuilderCodeDemo() {
 
   async function sendWithViem() {
     if (!provider || !address || !activeChain) {
-      setError("请先连接钱包，并切换到 X Layer 主网或测试网。");
+      setError("Please connect your wallet and switch to X Layer mainnet or testnet.");
       return;
     }
 
@@ -144,7 +144,7 @@ export function ViemBuilderCodeDemo() {
 
       setHash(nextHash);
     } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : "发送交易失败。");
+      setError(nextError instanceof Error ? nextError.message : "Failed to send transaction.");
     } finally {
       setIsSending(false);
     }
@@ -155,20 +155,14 @@ export function ViemBuilderCodeDemo() {
       <section className="hero">
         <div className="hero-card">
           <span className="eyebrow">Next.js + Viem + X Layer Builder Codes</span>
-          <h1>Viem 最小验证页</h1>
-          <p>
-            这个页面按文档里的 Viem 思路，在 wallet client 级别配置
-            <span className="mono">dataSuffix</span>。为了能在浏览器里拉起 OKX
-            Wallet，这里使用的是 injected provider 的
-            <span className="mono">custom(window.ethereum)</span>
-            transport。
-          </p>
+          <h1>Viem Minimal Verification Page</h1>
+          <p>This page follows the Viem approach from the docs, configuring <span className="mono">dataSuffix</span> at the wallet client level. To launch OKX Wallet in the browser, it uses an injected provider with a <span className="mono">custom(window.ethereum)</span> transport.</p>
           <div className="hero-links">
             <a className="hero-link" href={builderCodeDocsUrl} rel="noreferrer" target="_blank">
-              查看官方集成文档
+              Official Integration Docs
             </a>
             <a className="hero-link" href={faucetUrl} rel="noreferrer" target="_blank">
-              领取 X Layer Testnet OKB
+              Get X Layer Testnet OKB
             </a>
           </div>
         </div>
@@ -178,29 +172,27 @@ export function ViemBuilderCodeDemo() {
         <div className="demo-pane">
           <h2 className="section-title">Doc-Style Viem Example</h2>
           <p className="section-copy">
-            先连接钱包，再切到你要测试的 X Layer 网络。发送按钮会通过
-            <span className="mono">createWalletClient(..., dataSuffix)</span>
-            发起交易，方便你直接看钱包弹窗里的 HEX data。
+            Connect your wallet and switch to the X Layer network you want to test. The send button will call <span className="mono">createWalletClient(..., dataSuffix)</span> to submit the transaction so you can inspect the HEX data in the wallet popup.
           </p>
 
           <div className="status-grid">
             <div className="status-chip">
-              <span className="status-label">钱包状态</span>
-              <span className="status-value">{address ? "已连接" : "未连接"}</span>
+              <span className="status-label">Wallet</span>
+              <span className="status-value">{address ? "Connected" : "Disconnected"}</span>
             </div>
             <div className="status-chip">
-              <span className="status-label">当前网络</span>
-              <span className="status-value">{activeChain?.name ?? "尚未连接或非 X Layer"}</span>
+              <span className="status-label">Network</span>
+              <span className="status-value">{activeChain?.name ?? "Not connected or not X Layer"}</span>
             </div>
             <div className="status-chip">
-              <span className="status-label">测试地址</span>
+              <span className="status-label">Recipient</span>
               <span className="status-value mono">{defaultRecipientAddress}</span>
             </div>
           </div>
 
           <div className="wallet-actions">
             <button className="ghost-button" onClick={() => void connectWallet()} type="button">
-              {isConnecting ? "连接中..." : "连接钱包"}
+              {isConnecting ? "Connecting..." : "Connect Wallet"}
             </button>
             <button
               className="ghost-button"
@@ -208,7 +200,7 @@ export function ViemBuilderCodeDemo() {
               onClick={() => void switchToChain(xlayerMainnet)}
               type="button"
             >
-              切到主网
+              Switch to Mainnet
             </button>
             <button
               className="ghost-button"
@@ -216,7 +208,7 @@ export function ViemBuilderCodeDemo() {
               onClick={() => void switchToChain(xlayerTestnet)}
               type="button"
             >
-              切到测试网
+              Switch to Testnet
             </button>
           </div>
 
@@ -227,16 +219,13 @@ export function ViemBuilderCodeDemo() {
               onClick={() => void sendWithViem()}
               type="button"
             >
-              {isSending ? "等待钱包签名..." : "Send OKB"}
+              {isSending ? "Awaiting signature..." : "Send OKB"}
             </button>
           </div>
 
           {!builderCodeConfigured ? (
             <div className="callout callout-warning">
-              你还在使用占位 Builder Code。先在
-              <span className="mono">.env.local</span> 里替换
-              <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span>
-              ，再重新启动应用。
+              You are still using a placeholder Builder Code. Replace <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span> in <span className="mono">.env.local</span> and restart the app.
             </div>
           ) : null}
 
@@ -244,18 +233,17 @@ export function ViemBuilderCodeDemo() {
 
           {hash ? (
             <div className="callout callout-success">
-              交易已发送：
-              <span className="mono"> {hash}</span>{" "}
+              Transaction sent: <span className="mono"> {hash}</span>{" "}
               <a href={`${explorerUrl}/tx/${hash}`} rel="noreferrer" target="_blank">
-                在 OKX Explorer 查看
+                View on OKX Explorer
               </a>
             </div>
           ) : null}
         </div>
 
         <aside className="meta-pane">
-          <h2 className="section-title">实际调用代码</h2>
-          <p className="meta-copy">这个页面里的发送按钮会直接执行下面这段 Viem 代码。</p>
+          <h2 className="section-title">Live Call Code</h2>
+          <p className="meta-copy">The send button on this page directly executes the Viem code shown below.</p>
 
           <div className="meta-list">
             <div className="meta-card">
@@ -263,7 +251,7 @@ export function ViemBuilderCodeDemo() {
               <div className="meta-value mono">
                 {`const walletClient = getBuilderCodeWalletClient()`}
                 <br />
-                {`// 全局单例，只初始化一次`}
+                {`// global singleton, initialized once`}
               </div>
             </div>
 
@@ -296,13 +284,13 @@ export function ViemBuilderCodeDemo() {
             </div>
 
             <div className="meta-card">
-              <div className="meta-label">当前地址</div>
-              <div className="meta-value mono">{address ?? "未连接"}</div>
+              <div className="meta-label">Current Address</div>
+              <div className="meta-value mono">{address ?? "Not connected"}</div>
             </div>
           </div>
 
           <div className="fine-print">
-            <div className="meta-label">当前 client 上的 dataSuffix</div>
+            <div className="meta-label">dataSuffix on current client</div>
             <p className="mono-note">{dataSuffix}</p>
           </div>
         </aside>

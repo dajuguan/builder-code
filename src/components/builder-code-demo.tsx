@@ -45,22 +45,14 @@ export function BuilderCodeDemo() {
       <section className="hero">
         <div className="hero-card">
           <span className="eyebrow">Next.js + Wagmi + X Layer Builder Codes</span>
-          <h1>Wagmi 最小验证页</h1>
-          <p>
-            这个页面只保留最接近文档的 Wagmi 示例。
-            <span className="mono">Send OKB</span>
-            按钮调用的是不额外传
-            <span className="mono">dataSuffix</span>
-            的
-            <span className="mono">useSendTransaction()</span>
-            ，用来直接验证 client-level 配置是否会自动生效。
-          </p>
+          <h1>Wagmi Minimal Verification Page</h1>
+          <p>This page keeps only the closest-to-docs Wagmi example. The <span className="mono">Send OKB</span> button calls <span className="mono">useSendTransaction()</span> without passing an extra <span className="mono">dataSuffix</span>, to directly verify whether the client-level config takes effect automatically.</p>
           <div className="hero-links">
             <a className="hero-link" href={builderCodeDocsUrl} rel="noreferrer" target="_blank">
-              查看官方集成文档
+              Official Integration Docs
             </a>
             <a className="hero-link" href={faucetUrl} rel="noreferrer" target="_blank">
-              领取 X Layer Testnet OKB
+              Get X Layer Testnet OKB
             </a>
           </div>
         </div>
@@ -70,21 +62,20 @@ export function BuilderCodeDemo() {
         <div className="demo-pane">
           <h2 className="section-title">Doc-Style Wagmi Example</h2>
           <p className="section-copy">
-            先连接钱包，再切到你要测试的 X Layer 网络。然后点击发送按钮，观察 OKX
-            Wallet 弹窗里的 HEX data 是否为空。
+            Connect your wallet, then switch to the X Layer network you want to test. Click the send button and check whether the HEX data in the OKX Wallet popup is empty.
           </p>
 
           <div className="status-grid">
             <div className="status-chip">
-              <span className="status-label">钱包状态</span>
-              <span className="status-value">{isConnected ? "已连接" : "未连接"}</span>
+              <span className="status-label">Wallet</span>
+              <span className="status-value">{isConnected ? "Connected" : "Disconnected"}</span>
             </div>
             <div className="status-chip">
-              <span className="status-label">当前网络</span>
-              <span className="status-value">{chain?.name ?? "尚未连接钱包"}</span>
+              <span className="status-label">Network</span>
+              <span className="status-value">{chain?.name ?? "Not connected"}</span>
             </div>
             <div className="status-chip">
-              <span className="status-label">测试地址</span>
+              <span className="status-label">Recipient</span>
               <span className="status-value mono">{defaultRecipientAddress}</span>
             </div>
           </div>
@@ -92,7 +83,7 @@ export function BuilderCodeDemo() {
           <div className="wallet-actions">
             {isConnected ? (
               <button className="ghost-button" onClick={() => disconnect()} type="button">
-                断开钱包
+                Disconnect
               </button>
             ) : (
               <button
@@ -100,7 +91,7 @@ export function BuilderCodeDemo() {
                 onClick={() => connect({ connector })}
                 type="button"
               >
-                {isConnecting ? "连接中..." : "连接钱包"}
+                {isConnecting ? "Connecting..." : "Connect Wallet"}
               </button>
             )}
             <button
@@ -109,7 +100,7 @@ export function BuilderCodeDemo() {
               onClick={() => switchChain({ chainId: xlayerMainnet.id })}
               type="button"
             >
-              切到主网
+              Switch to Mainnet
             </button>
             <button
               className="ghost-button"
@@ -117,7 +108,7 @@ export function BuilderCodeDemo() {
               onClick={() => switchChain({ chainId: xlayerTestnet.id })}
               type="button"
             >
-              切到测试网
+              Switch to Testnet
             </button>
           </div>
 
@@ -133,7 +124,7 @@ export function BuilderCodeDemo() {
               }
               type="button"
             >
-              {isSending ? "等待钱包签名..." : "Send OKB via useSendTransaction"}
+              {isSending ? "Awaiting signature..." : "Send OKB via useSendTransaction"}
             </button>
             <button
               className="ghost-button"
@@ -155,16 +146,13 @@ export function BuilderCodeDemo() {
               }
               type="button"
             >
-              {isSendingCalls ? "等待钱包签名..." : "Send OKB via useSendCalls"}
+              {isSendingCalls ? "Awaiting signature..." : "Send OKB via useSendCalls"}
             </button>
           </div>
 
           {!builderCodeConfigured ? (
             <div className="callout callout-warning">
-              你还在使用占位 Builder Code。先在
-              <span className="mono">.env.local</span> 里替换
-              <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span>
-              ，再重新启动应用。
+              You are still using a placeholder Builder Code. Replace <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span> in <span className="mono">.env.local</span> and restart the app.
             </div>
           ) : null}
 
@@ -177,27 +165,25 @@ export function BuilderCodeDemo() {
 
           {hash ? (
             <div className="callout callout-success">
-              交易已发送：
-              <span className="mono"> {hash}</span>
+              Transaction sent: <span className="mono"> {hash}</span>
               {" "}
               <a href={`${explorerUrl}/tx/${hash}`} rel="noreferrer" target="_blank">
-                在 OKLink 查看
+                View on OKLink
               </a>
             </div>
           ) : null}
 
           {callsId ? (
             <div className="callout callout-success">
-              useSendCalls 已提交：
-              <span className="mono"> {callsId.id}</span>
+              useSendCalls submitted: <span className="mono"> {callsId.id}</span>
             </div>
           ) : null}
         </div>
 
         <aside className="meta-pane">
-          <h2 className="section-title">实际调用代码</h2>
+          <h2 className="section-title">Live Call Code</h2>
           <p className="meta-copy">
-            页面里的发送按钮会直接执行下面这段最小代码。
+            The send buttons on this page directly execute the minimal code shown below.
           </p>
 
           <div className="meta-list">
@@ -224,19 +210,16 @@ export function BuilderCodeDemo() {
             </div>
 
             <div className="meta-card">
-              <div className="meta-label">当前地址</div>
-              <div className="meta-value mono">{address ?? "未连接"}</div>
+              <div className="meta-label">Current Address</div>
+              <div className="meta-value mono">{address ?? "Not connected"}</div>
             </div>
           </div>
 
           <div className="fine-print">
-            <div className="meta-label">当前 config 上的 dataSuffix</div>
+            <div className="meta-label">dataSuffix on current config</div>
             <p className="mono-note">{dataSuffix}</p>
             <p className="note">
-              如果这个页面里钱包弹窗 HEX data 为空，就能非常直接地说明：
-              当前默认 Wagmi connector 路径下，config-level
-              <span className="mono">dataSuffix</span>
-              没有自动进入最终的发送请求。
+              If the HEX data in the wallet popup is empty on this page, it directly confirms that the config-level <span className="mono">dataSuffix</span> is not automatically included in the final send request through the default Wagmi connector path.
             </p>
           </div>
         </aside>
