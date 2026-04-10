@@ -4,8 +4,8 @@ import { DemoNav } from "@/components/demo-nav";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "X Layer Builder Code Demo",
-  description: "A Next.js example for sending X Layer transactions with Builder Code attribution.",
+  title: "X Layer Builder Code Integration & Verification",
+  description: "A Next.js toolkit for integrating and verifying OKX X Layer Builder Code attribution — Wagmi, Viem, CLI script, and ERC-8021 encode/decode.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

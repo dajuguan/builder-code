@@ -30,7 +30,7 @@ export function ScriptGuide() {
           <div className="meta-list">
             <div className="meta-card">
               <div className="meta-label">Step 1 — Download the script</div>
-              <div className="meta-value mono">{"curl -O http://xxx.com/send-erc8021.sh"}</div>
+              <div className="meta-value mono">{"curl -O https://builder-code.vercel.app/send-erc8021.sh"}</div>
             </div>
 
             <div className="meta-card">
