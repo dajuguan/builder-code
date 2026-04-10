@@ -4,8 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const routes = [
-  { href: "/wagmi", label: "Wagmi" },
-  { href: "/viem", label: "Viem" },
+  { href: "/wagmi",  label: "Wagmi" },
+  { href: "/viem",   label: "Viem" },
+  { href: "/script", label: "CLI Script" },
 ];
 
 export function DemoNav() {
