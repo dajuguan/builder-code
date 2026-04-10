@@ -1,6 +1,13 @@
 # X Layer Builder Code Next.js Demo
 
-这是一个最小可运行的 Next.js 示例，用最接近 OKX X Layer 文档的 Wagmi 写法验证 client-level `dataSuffix` 是否真的会自动进入 `useSendTransaction()` 的钱包请求。
+这是一个最小可运行的 Next.js 示例，拆成两个验证页：
+
+- `/wagmi`
+  基于 Wagmi provider 的版本
+- `/viem`
+  基于 Viem client 的版本
+
+用来分别验证 OKX X Layer Builder Code 在两种集成方式下是否真的进入最终的钱包请求。
 
 参考文档：
 - https://web3.okx.com/xlayer/docs/developer/builder-codes/integration
@@ -33,16 +40,22 @@ NEXT_PUBLIC_XLAYER_AMOUNT=0.0001
 npm run dev
 ```
 
-打开 `http://localhost:3000`。
+打开 `http://localhost:3000`，它会自动跳到 `/wagmi`。顶部按钮可以在 `/wagmi` 和 `/viem` 之间切换。
 
 ## 代码结构
 
 - `src/lib/xlayer.ts`
   定义 X Layer Testnet、Builder Code、`dataSuffix`
+- `app/wagmi/page.tsx`
+  Wagmi 子页面
+- `app/viem/page.tsx`
+  Viem 子页面
 - `src/lib/wagmi.ts`
-  按文档方式配置 `createConfig({ dataSuffix })`
+  Wagmi 基础配置
 - `src/components/builder-code-demo.tsx`
-  一个最小页面，直接调用文档风格的 `useSendTransaction()`
+  Wagmi 验证页
+- `src/components/viem-builder-code-demo.tsx`
+  Viem 验证页
 
 ## 核心实现
 

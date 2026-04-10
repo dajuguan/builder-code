@@ -34,6 +34,66 @@ body {
     serif;
 }
 
+.chrome {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  backdrop-filter: blur(16px);
+  background: rgba(246, 239, 228, 0.78);
+  border-bottom: 1px solid var(--border);
+}
+
+.chrome-inner {
+  width: min(1120px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 14px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.chrome-label {
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.route-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.route-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.58);
+  text-decoration: none;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease,
+    background 140ms ease;
+}
+
+.route-link:hover {
+  transform: translateY(-1px);
+}
+
+.route-link-active {
+  color: #fffaf3;
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--accent) 0%, #e68d3c 100%);
+  box-shadow: 0 14px 30px rgba(186, 96, 31, 0.24);
+}
+
 a {
   color: inherit;
 }
@@ -304,6 +364,13 @@ input {
 }
 
 @media (max-width: 640px) {
+  .chrome-inner {
+    width: min(100% - 20px, 1120px);
+    padding: 12px 0;
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
   .shell {
     width: min(100% - 20px, 1120px);
     padding: 20px 0 36px;

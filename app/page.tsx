@@ -1,5 +1,5 @@
-import { BuilderCodeDemo } from "@/components/builder-code-demo";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <BuilderCodeDemo />;
+  redirect("/wagmi");
 }
