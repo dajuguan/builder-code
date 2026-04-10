@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { numberToHex, type Address } from "viem";
 import {
-  builderCodeConfigured,
   builderCodeDocsUrl,
-  dataSuffix,
-  defaultRecipientAddress,
+  defaultBuilderCode,
   faucetUrl,
+  makeDataSuffix,
   xlayerMainnet,
   xlayerTestnet,
 } from "@/lib/xlayer";
@@ -32,6 +31,12 @@ export function ViemBuilderCodeDemo() {
   const [isSending, setIsSending] = useState(false);
   const [isSwitching, setIsSwitching] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const [builderCode, setBuilderCode] = useState(defaultBuilderCode);
+  const [recipient, setRecipient] = useState<string>("");
+
+  const effectiveRecipient = (recipient.trim() || address || "") as Address;
+  const dataSuffix = makeDataSuffix(builderCode);
 
   useEffect(() => {
     const injected = getInjectedProvider();
@@ -128,18 +133,23 @@ export function ViemBuilderCodeDemo() {
       setError("Please connect your wallet and switch to X Layer mainnet or testnet.");
       return;
     }
+    if (!effectiveRecipient) {
+      setError("Please enter a recipient address.");
+      return;
+    }
 
     setError(null);
     setIsSending(true);
     setHash(null);
 
     try {
-      const walletClient = getBuilderCodeWalletClient();
+      const walletClient = getBuilderCodeWalletClient(dataSuffix);
 
       const nextHash = await walletClient.sendTransaction({
         account: address,
         chain: activeChain,
-        to: defaultRecipientAddress,
+        to: effectiveRecipient,
+        value: 0n,
       });
 
       setHash(nextHash);
@@ -175,6 +185,35 @@ export function ViemBuilderCodeDemo() {
             Connect your wallet and switch to the X Layer network you want to test. The send button will call <span className="mono">createWalletClient(..., dataSuffix)</span> to submit the transaction so you can inspect the HEX data in the wallet popup.
           </p>
 
+          <div className="field-group">
+            <label className="field-label" htmlFor="viem-builder-code">Builder Code</label>
+            <input
+              className="field-input mono"
+              id="viem-builder-code"
+              onChange={(e) => setBuilderCode(e.target.value)}
+              placeholder={defaultBuilderCode}
+              type="text"
+              value={builderCode}
+            />
+          </div>
+
+          <div className="field-group">
+            <label className="field-label" htmlFor="viem-recipient">
+              Recipient{" "}
+              <span className="field-hint">
+                {address ? `defaults to your address (${address})` : "defaults to connected wallet address"}
+              </span>
+            </label>
+            <input
+              className="field-input mono"
+              id="viem-recipient"
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder={address ?? "connect wallet to auto-fill"}
+              type="text"
+              value={recipient}
+            />
+          </div>
+
           <div className="status-grid">
             <div className="status-chip">
               <span className="status-label">Wallet</span>
@@ -186,7 +225,7 @@ export function ViemBuilderCodeDemo() {
             </div>
             <div className="status-chip">
               <span className="status-label">Recipient</span>
-              <span className="status-value mono">{defaultRecipientAddress}</span>
+              <span className="status-value mono">{effectiveRecipient || "—"}</span>
             </div>
           </div>
 
@@ -215,19 +254,13 @@ export function ViemBuilderCodeDemo() {
           <div className="actions" style={{ marginTop: 20 }}>
             <button
               className="primary-button"
-              disabled={!address || !activeChain || isSending}
+              disabled={!address || !activeChain || isSending || !effectiveRecipient}
               onClick={() => void sendWithViem()}
               type="button"
             >
               {isSending ? "Awaiting signature..." : "Send OKB"}
             </button>
           </div>
-
-          {!builderCodeConfigured ? (
-            <div className="callout callout-warning">
-              You are still using a placeholder Builder Code. Replace <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span> in <span className="mono">.env.local</span> and restart the app.
-            </div>
-          ) : null}
 
           {error ? <div className="callout callout-danger">{error}</div> : null}
 
@@ -249,18 +282,9 @@ export function ViemBuilderCodeDemo() {
             <div className="meta-card">
               <div className="meta-label">client.ts</div>
               <div className="meta-value mono">
-                {`const walletClient = getBuilderCodeWalletClient()`}
+                {`const walletClient = createWalletClient({`}
                 <br />
-                {`// global singleton, initialized once`}
-              </div>
-            </div>
-
-            <div className="meta-card">
-              <div className="meta-label">singleton.ts</div>
-              <div className="meta-value mono">
-                {`createWalletClient({`}
-                <br />
-                {`  dataSuffix: DATA_SUFFIX,`}
+                {`  dataSuffix: Attribution.toDataSuffix({ codes: ["${builderCode}"] }),`}
                 <br />
                 {`  transport: custom(window.ethereum),`}
                 <br />
@@ -277,7 +301,9 @@ export function ViemBuilderCodeDemo() {
                 <br />
                 {`  chain: xlayerChain,`}
                 <br />
-                {`  to: "${defaultRecipientAddress}",`}
+                {`  to: "${effectiveRecipient || "<recipient>"}",`}
+                <br />
+                {`  value: 0n,`}
                 <br />
                 {`})`}
               </div>

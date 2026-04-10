@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   useAccount,
   useConnect,
@@ -8,19 +9,19 @@ import {
   useSendTransaction,
   useSwitchChain,
 } from "wagmi";
-import { parseEther } from "viem";
+import { type Address } from "viem";
 import { config } from "@/lib/wagmi";
 import {
-  builderCodeConfigured,
   builderCodeDocsUrl,
-  dataSuffix,
-  defaultRecipientAddress,
+  defaultBuilderCode,
   faucetUrl,
+  makeDataSuffix,
+  setBuilderCode as syncBuilderCode,
   xlayerMainnet,
   xlayerTestnet,
 } from "@/lib/xlayer";
 
-export function BuilderCodeDemo() {
+export function WagmiBuilderCodeDemo() {
   const { address, chain, chainId, isConnected } = useAccount();
   const { connect, error: connectError, isPending: isConnecting } = useConnect();
   const { disconnect } = useDisconnect();
@@ -34,6 +35,12 @@ export function BuilderCodeDemo() {
     isPending: isSendingCalls,
   } = useSendCalls();
 
+  const [builderCode, setBuilderCode] = useState(defaultBuilderCode);
+  const [recipient, setRecipient] = useState<string>("");
+
+  const effectiveRecipient = (recipient.trim() || address || "") as Address;
+  const dataSuffix = makeDataSuffix(builderCode);
+
   const connector = config.connectors[0];
   const isSupportedChain =
     chainId === xlayerMainnet.id || chainId === xlayerTestnet.id;
@@ -46,7 +53,7 @@ export function BuilderCodeDemo() {
         <div className="hero-card">
           <span className="eyebrow">Next.js + Wagmi + X Layer Builder Codes</span>
           <h1>Wagmi Minimal Verification Page</h1>
-          <p>This page keeps only the closest-to-docs Wagmi example. The <span className="mono">Send OKB</span> button calls <span className="mono">useSendTransaction()</span> without passing an extra <span className="mono">dataSuffix</span>, to directly verify whether the client-level config takes effect automatically.</p>
+          <p>This page keeps only the closest-to-docs Wagmi example. The <span className="mono">Send OKB</span> button calls <span className="mono">useSendTransaction()</span> with the ERC-8021 <span className="mono">dataSuffix</span> appended directly as the transaction <span className="mono">data</span> field.</p>
           <div className="hero-links">
             <a className="hero-link" href={builderCodeDocsUrl} rel="noreferrer" target="_blank">
               Official Integration Docs
@@ -65,6 +72,38 @@ export function BuilderCodeDemo() {
             Connect your wallet, then switch to the X Layer network you want to test. Click the send button and check whether the HEX data in the OKX Wallet popup is empty.
           </p>
 
+          <div className="field-group">
+            <label className="field-label" htmlFor="wagmi-builder-code">Builder Code</label>
+            <input
+              className="field-input mono"
+              id="wagmi-builder-code"
+              onChange={(e) => {
+                syncBuilderCode(e.target.value);
+                setBuilderCode(e.target.value);
+              }}
+              placeholder={defaultBuilderCode}
+              type="text"
+              value={builderCode}
+            />
+          </div>
+
+          <div className="field-group">
+            <label className="field-label" htmlFor="wagmi-recipient">
+              Recipient{" "}
+              <span className="field-hint">
+                {address ? `defaults to your address (${address})` : "defaults to connected wallet address"}
+              </span>
+            </label>
+            <input
+              className="field-input mono"
+              id="wagmi-recipient"
+              onChange={(e) => setRecipient(e.target.value)}
+              placeholder={address ?? "connect wallet to auto-fill"}
+              type="text"
+              value={recipient}
+            />
+          </div>
+
           <div className="status-grid">
             <div className="status-chip">
               <span className="status-label">Wallet</span>
@@ -76,7 +115,7 @@ export function BuilderCodeDemo() {
             </div>
             <div className="status-chip">
               <span className="status-label">Recipient</span>
-              <span className="status-value mono">{defaultRecipientAddress}</span>
+              <span className="status-value mono">{effectiveRecipient || "—"}</span>
             </div>
           </div>
 
@@ -115,11 +154,12 @@ export function BuilderCodeDemo() {
           <div className="actions" style={{ marginTop: 20 }}>
             <button
               className="primary-button"
-              disabled={!isConnected || !isSupportedChain || isSending}
+              disabled={!isConnected || !isSupportedChain || isSending || !effectiveRecipient}
               onClick={() =>
                 mutate({
-                  to: defaultRecipientAddress,
-                  value: parseEther("0.000"),
+                  to: effectiveRecipient,
+                  value: 0n,
+                  data: dataSuffix,
                 })
               }
               type="button"
@@ -128,19 +168,12 @@ export function BuilderCodeDemo() {
             </button>
             <button
               className="ghost-button"
-              disabled={!isConnected || !isSupportedChain || isSendingCalls}
+              disabled={!isConnected || !isSupportedChain || isSendingCalls || !effectiveRecipient}
               onClick={() =>
                 sendCalls({
-                  calls: [
-                    {
-                      to: defaultRecipientAddress,
-                    },
-                  ],
+                  calls: [{ to: effectiveRecipient }],
                   capabilities: {
-                    dataSuffix: {
-                      value: dataSuffix,
-                      optional: true,
-                    },
+                    dataSuffix: { value: dataSuffix, optional: true },
                   },
                 })
               }
@@ -149,12 +182,6 @@ export function BuilderCodeDemo() {
               {isSendingCalls ? "Awaiting signature..." : "Send OKB via useSendCalls"}
             </button>
           </div>
-
-          {!builderCodeConfigured ? (
-            <div className="callout callout-warning">
-              You are still using a placeholder Builder Code. Replace <span className="mono">NEXT_PUBLIC_XLAYER_BUILDER_CODE</span> in <span className="mono">.env.local</span> and restart the app.
-            </div>
-          ) : null}
 
           {connectError ? <div className="callout callout-danger">{connectError.message}</div> : null}
           {switchError ? <div className="callout callout-danger">{switchError.message}</div> : null}
@@ -190,7 +217,7 @@ export function BuilderCodeDemo() {
             <div className="meta-card">
               <div className="meta-label">config.ts</div>
               <div className="meta-value mono">
-                {`const DATA_SUFFIX = Attribution.toDataSuffix({ codes: ["YOUR-BUILDER-CODE"] })`}
+                {`const DATA_SUFFIX = Attribution.toDataSuffix({ codes: ["${builderCode}"] })`}
                 <br />
                 {`createConfig({ chains: [xlayerMainnet, xlayerTestnet], dataSuffix: DATA_SUFFIX })`}
               </div>
@@ -201,9 +228,11 @@ export function BuilderCodeDemo() {
               <div className="meta-value mono">
                 {`sendTransaction({`}
                 <br />
-                {`  to: "${defaultRecipientAddress}",`}
+                {`  to: "${effectiveRecipient || "<recipient>"}",`}
                 <br />
-                {`  value: parseEther("0.000"),`}
+                {`  value: 0n,`}
+                <br />
+                {`  data: dataSuffix, // appended as calldata`}
                 <br />
                 {`})`}
               </div>

@@ -1,6 +1,6 @@
 import { createConfig, http } from "wagmi";
 import { injectedWithDataSuffix } from "@/lib/injected-with-data-suffix";
-import { dataSuffix, xlayerMainnet, xlayerTestnet } from "@/lib/xlayer";
+import { defaultBuilderCode, makeDataSuffix, xlayerMainnet, xlayerTestnet } from "@/lib/xlayer";
 
 export const config = createConfig({
   chains: [xlayerMainnet, xlayerTestnet],
@@ -10,7 +10,7 @@ export const config = createConfig({
     [xlayerMainnet.id]: http(xlayerMainnet.rpcUrls.default.http[0]),
     [xlayerTestnet.id]: http(xlayerTestnet.rpcUrls.default.http[0]),
   },
-  dataSuffix,
+  dataSuffix: makeDataSuffix(defaultBuilderCode),
 });
 
 declare module "wagmi" {

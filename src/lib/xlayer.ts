@@ -1,5 +1,5 @@
 import { Attribution } from "ox/erc8021";
-import { defineChain, type Address } from "viem";
+import { defineChain } from "viem";
 
 export const xlayerMainnet = defineChain({
   id: 196,
@@ -44,23 +44,22 @@ export const xlayerTestnet = defineChain({
   testnet: true,
 });
 
-const placeholderBuilderCode = "YOUR-BUILDER-CODE";
+export const defaultBuilderCode = "98xx1660gorvuiv3";
 
-export const builderCode =
-  process.env.NEXT_PUBLIC_XLAYER_BUILDER_CODE ?? placeholderBuilderCode;
+let _builderCode = defaultBuilderCode;
 
-export const builderCodeConfigured = builderCode !== placeholderBuilderCode;
+export function setBuilderCode(code: string) {
+  _builderCode = code;
+}
 
-export const dataSuffix = Attribution.toDataSuffix({
-  codes: [builderCode],
-});
+export function makeDataSuffix(builderCode: string) {
+  return Attribution.toDataSuffix({ codes: [builderCode] });
+}
 
-export const defaultRecipientAddress = (
-  process.env.NEXT_PUBLIC_XLAYER_RECIPIENT_ADDRESS ??
-  "0x5f4d9959cf2a8408c8c8be42f244dc6d4816214d"
-) as Address;
-
-export const defaultAmount = process.env.NEXT_PUBLIC_XLAYER_AMOUNT ?? "0.0";
+/** Returns dataSuffix for the currently active builder code (mutable). */
+export function getCurrentDataSuffix() {
+  return makeDataSuffix(_builderCode);
+}
 
 export const builderCodeDocsUrl =
   "https://web3.okx.com/xlayer/docs/developer/builder-codes/integration";

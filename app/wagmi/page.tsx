@@ -1,5 +1,5 @@
-import { BuilderCodeDemo } from "@/components/builder-code-demo";
+import { WagmiBuilderCodeDemo } from "@/components/wagmi-builder-code-demo";
 
 export default function WagmiPage() {
-  return <BuilderCodeDemo />;
+  return <WagmiBuilderCodeDemo />;
 }

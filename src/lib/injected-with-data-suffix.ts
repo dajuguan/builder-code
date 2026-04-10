@@ -1,7 +1,7 @@
 import { createClient, custom } from "viem";
 import { createConnector } from "wagmi";
 import { injected } from "wagmi/connectors";
-import { dataSuffix } from "@/lib/xlayer";
+import { getCurrentDataSuffix } from "@/lib/xlayer";
 
 type InjectedParameters = Parameters<typeof injected>[0];
 
@@ -27,7 +27,7 @@ export function injectedWithDataSuffix(parameters?: InjectedParameters) {
         return createClient({
           account,
           chain,
-          dataSuffix,
+          dataSuffix: getCurrentDataSuffix(),
           name: `${connector.name} Connector Client`,
           transport: (options) =>
             custom(provider)({

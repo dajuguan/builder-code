@@ -18,27 +18,15 @@ Reference docs:
 npm install
 ```
 
-2. Copy the environment variables
-
-```bash
-cp .env.example .env.local
-```
-
-3. Fill in your values in `.env.local`
-
-```bash
-NEXT_PUBLIC_XLAYER_BUILDER_CODE=your-builder-code
-NEXT_PUBLIC_XLAYER_RECIPIENT_ADDRESS=your-recipient-address
-NEXT_PUBLIC_XLAYER_AMOUNT=0.0001
-```
-
-4. Start the dev server
+2. Start the dev server
 
 ```bash
 npm run dev
 ```
 
 Open `http://localhost:3000` — it will redirect to `/wagmi` automatically. Use the top nav to switch between pages.
+
+No environment variables are required. Builder Code and recipient address are configured directly in the UI on each page.
 
 ## Project Structure
 
@@ -91,12 +79,6 @@ const walletClient = createWalletClient({
 ```
 
 No `dataSuffix` is passed at the individual transaction level — this intentionally tests whether the client-level config takes effect automatically.
-
-### ERC-8021 encoding (Schema 0)
-
-```
-codes_ascii ∥ codes_length (1 byte) ∥ schema_id=0x00 (1 byte) ∥ 0x80218021802180218021802180218021
-```
 
 ### CLI script — `send-erc8021.sh`
 

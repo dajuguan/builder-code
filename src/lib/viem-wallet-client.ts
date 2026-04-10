@@ -1,5 +1,4 @@
 import { createWalletClient, custom, type EIP1193Provider } from "viem";
-import { dataSuffix } from "@/lib/xlayer";
 
 export type BrowserProvider = EIP1193Provider & {
   on?: (event: string, listener: (...args: unknown[]) => void) => void;
@@ -10,8 +9,6 @@ declare global {
   interface Window {
     ethereum?: BrowserProvider;
   }
-
-  var __builderCodeWalletClient__: ReturnType<typeof createWalletClient> | undefined;
 }
 
 export function getInjectedProvider() {
@@ -19,16 +16,12 @@ export function getInjectedProvider() {
   return window.ethereum ?? null;
 }
 
-export function getBuilderCodeWalletClient() {
+export function getBuilderCodeWalletClient(dataSuffix: `0x${string}`) {
   const provider = getInjectedProvider();
-  if (!provider) throw new Error("未检测到 injected wallet provider。");
+  if (!provider) throw new Error("No injected wallet provider detected.");
 
-  if (!globalThis.__builderCodeWalletClient__) {
-    globalThis.__builderCodeWalletClient__ = createWalletClient({
-      dataSuffix,
-      transport: custom(provider),
-    });
-  }
-
-  return globalThis.__builderCodeWalletClient__;
+  return createWalletClient({
+    dataSuffix,
+    transport: custom(provider),
+  });
 }
