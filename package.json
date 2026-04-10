@@ -1,0 +1,28 @@
+{
+  "name": "builder-code",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "type": "module",
+  "dependencies": {
+    "@tanstack/react-query": "^5.97.0",
+    "next": "^16.2.3",
+    "ox": "^0.14.15",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5",
+    "viem": "^2.47.12",
+    "wagmi": "^3.6.1"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.3",
+    "typescript": "^6.0.2"
+  }
+}
