@@ -4,6 +4,7 @@ import {
   useAccount,
   useConnect,
   useDisconnect,
+  useSendCalls,
   useSendTransaction,
   useSwitchChain,
 } from "wagmi";
@@ -26,6 +27,12 @@ export function BuilderCodeDemo() {
   const { switchChain, error: switchError, isPending: isSwitching } = useSwitchChain();
   const { mutate, data: hash, error: sendError, isPending: isSending } =
     useSendTransaction();
+  const {
+    mutate: sendCalls,
+    data: callsId,
+    error: sendCallsError,
+    isPending: isSendingCalls,
+  } = useSendCalls();
 
   const connector = config.connectors[0];
   const isSupportedChain =
@@ -126,7 +133,29 @@ export function BuilderCodeDemo() {
               }
               type="button"
             >
-              {isSending ? "等待钱包签名..." : "Send OKB"}
+              {isSending ? "等待钱包签名..." : "Send OKB via useSendTransaction"}
+            </button>
+            <button
+              className="ghost-button"
+              disabled={!isConnected || !isSupportedChain || isSendingCalls}
+              onClick={() =>
+                sendCalls({
+                  calls: [
+                    {
+                      to: defaultRecipientAddress,
+                    },
+                  ],
+                  capabilities: {
+                    dataSuffix: {
+                      value: dataSuffix,
+                      optional: true,
+                    },
+                  },
+                })
+              }
+              type="button"
+            >
+              {isSendingCalls ? "等待钱包签名..." : "Send OKB via useSendCalls"}
             </button>
           </div>
 
@@ -142,6 +171,9 @@ export function BuilderCodeDemo() {
           {connectError ? <div className="callout callout-danger">{connectError.message}</div> : null}
           {switchError ? <div className="callout callout-danger">{switchError.message}</div> : null}
           {sendError ? <div className="callout callout-danger">{sendError.message}</div> : null}
+          {sendCallsError ? (
+            <div className="callout callout-danger">{sendCallsError.message}</div>
+          ) : null}
 
           {hash ? (
             <div className="callout callout-success">
@@ -151,6 +183,13 @@ export function BuilderCodeDemo() {
               <a href={`${explorerUrl}/tx/${hash}`} rel="noreferrer" target="_blank">
                 在 OKLink 查看
               </a>
+            </div>
+          ) : null}
+
+          {callsId ? (
+            <div className="callout callout-success">
+              useSendCalls 已提交：
+              <span className="mono"> {callsId.id}</span>
             </div>
           ) : null}
         </div>
